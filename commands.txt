@@ -1,0 +1,19 @@
+kubectl version --client
+minikube version
+minikube start --driver=docker
+kubectl get nodes
+eval $(minikube docker-env)
+docker build -t express-backend ./backend
+docker build -t flask-frontend ./frontend
+docker images
+kubectl apply -f backend-deployment.yaml
+kubectl get pods
+kubectl apply -f backend-service.yaml
+kubectl get svc
+kubectl apply -f frontend-deployment.yaml
+kubectl get pods
+kubectl apply -f frontend-service.yaml  
+kubectl get svc
+minikube service flask-frontend-service
+kubectl get deployments
+minikube status 
