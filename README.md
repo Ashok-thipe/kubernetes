@@ -1,155 +1,153 @@
-# Microservices Deployment on Kubernetes
+# Kubernetes Deployment Assignment
 
-## Overview
+**Flask Frontend + Express Backend using Minikube**
 
-This project demonstrates microservices deployment using **Kubernetes**.
+## Project Overview
 
-The repository contains two services:
+This project demonstrates deploying a simple microservices application on a local Kubernetes cluster using **Minikube**. The application consists of two services:
 
-- A **backend API** built with **Flask (Python)**
-- A **frontend web application** built with **Express.js (Node.js)**
+* **Frontend:** Node.js Express application
+* **Backend:** Python Flask API
 
-These services communicate with each other and are deployed as separate components in a Kubernetes environment.
+Both services are containerized with Docker and deployed to Kubernetes using **Deployments** and **Services**.
 
 ---
 
-# Repository Structure
+## System Requirements
+
+Minimum system requirements to run this project:
+
+* OS: Ubuntu 22.04 / Linux
+* CPU: 2 vCPUs (4 recommended)
+* RAM: 4 GB (8 GB recommended)
+* Storage: 20 GB free space
+
+Tools used:
+
+* Docker
+* Minikube
+* kubectl
+* Git
+
+---
+
+## Project Structure
 
 ```
-.
-├── backend/
-│   └── Flask backend service
+flask-node-docker-app
 │
-├── frontend/
-│   └── Express frontend service
+├── backend
+│   ├── app.py
+│   ├── requirements.txt
+│   └── Dockerfile
 │
-├── k8s/
-│   └── Kubernetes deployment and service configuration files
+├── frontend
+│   ├── server.js
+│   ├── package.json
+│   └── Dockerfile
 │
-├── snapshots/
-│   └── Screenshots of successful deployment and output
-│
-├── command.txt
-│   └── Commands used for deployment and testing
+├── backend-deployment.yaml
+├── backend-service.yaml
+├── frontend-deployment.yaml
+├── frontend-service.yaml
 │
 └── README.md
 ```
 
 ---
 
-# Backend Service
+## Steps to Deploy
 
-The **backend** folder contains a REST API built using **Flask** running on **Python**.
-
-### Functionality
-
-The backend service exposes an API endpoint that:
-
-- Receives user data (**name and email**) from the frontend service
-- Processes the request
-- Returns a **JSON response** confirming that the data has been received
-
-This service acts as the **data processing layer** in the microservices architecture.
-
----
-
-# Frontend Service
-
-The **frontend** folder contains a web application built using **Express.js** running on **Node.js**.
-
-### Functionality
-
-The frontend service:
-
-- Displays a **web form** where users can enter their **name and email**
-- Sends the submitted data to the backend API
-- Displays the response returned by the backend
-
-Communication between services is handled using HTTP requests.
-
----
-
-# System Architecture
+### 1. Start Minikube
 
 ```
-User Browser
-     │
-     ▼
-Express Frontend (Port 3000)
-     │
-     ▼
-Flask Backend API (Port 5000)
+minikube start --driver=docker
 ```
 
-The frontend sends user data to the backend service, which processes the request and returns a response.
+### 2. Use Minikube Docker Environment
+
+```
+eval $(minikube docker-env)
+```
+
+### 3. Build Docker Images
+
+```
+docker build -t express-backend ./backend
+docker build -t flask-frontend ./frontend
+```
+
+### 4. Deploy Backend
+
+```
+kubectl apply -f backend-deployment.yaml
+kubectl apply -f backend-service.yaml
+```
+
+### 5. Deploy Frontend
+
+```
+kubectl apply -f frontend-deployment.yaml
+kubectl apply -f frontend-service.yaml
+```
 
 ---
 
-# Technologies Used
+## Verify Deployment
 
-## Backend
-- Python
-- Flask
+Check running pods:
 
-## Frontend
-- JavaScript
-- Node.js
-- Express.js
-- Axios
-- EJS
-- body-parser
+```
+kubectl get pods
+```
 
-## Data Format
-- JSON
+Check services:
 
-## Deployment
-- Docker
-- Kubernetes
+```
+kubectl get svc
+```
 
 ---
 
-# Kubernetes Deployment
+## Access the Application
 
-This repository includes all the necessary configuration files required to deploy the application on **Kubernetes**.
+Get the service URL:
 
-The configuration includes:
+```
+minikube service flask-frontend-service --url
+```
 
-- Deployment files for frontend and backend services
-- Service definitions for internal communication
-- Container configuration for running the applications
-
----
-
-# Screenshots
-
-The **snapshots/** folder contains screenshots demonstrating:
-
-- Successful Kubernetes deployment
-- Running pods
-- Service exposure
-- Application output
+Open the URL in a browser to access the frontend application.
 
 ---
 
-# Commands
+## Kubernetes Architecture
 
-The **command.txt** file contains all commands used during:
-
-- Application build
-- Kubernetes deployment
-- Service verification
-- Testing the application
-
-This can be used as a reference to reproduce the deployment steps.
+```
+Browser
+   │
+NodePort Service
+   │
+Frontend Pod (Express)
+   │
+ClusterIP Service
+   │
+Backend Pod (Flask)
+```
 
 ---
 
-# Summary
+## Screenshots
 
-This project demonstrates a **simple microservices architecture** where:
+Included screenshots of:
 
-- A **frontend service** collects user input
-- A **backend service** processes the request
-- Both services are deployed and managed using **Kubernetes**
+* Minikube cluster running
+* Pods running (`kubectl get pods`)
+* Services (`kubectl get svc`)
+* Running application in browser
 
-The project highlights how containerized services communicate within a Kubernetes environment.
+---
+
+## Conclusion
+
+This project demonstrates how to deploy containerized microservices using Kubernetes on a local Minikube cluster. It covers containerization, Kubernetes deployments, service exposure, and internal service communication.
